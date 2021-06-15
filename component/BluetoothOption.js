@@ -10,19 +10,21 @@ import {
 } from 'react-native';
 
 import BluetoothSerial from 'react-native-bluetooth-serial';
+var _ = require('lodash');
 
 const BluetoothOption = () => {
-  const [bluetoothEnable, setBluetoothEnable] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false);
   const [discovering, setDiscovering] = useState(false);
-  const [deviceList, setDeviceList] = useState([]);
-  const [device, setDevice] = useState([]);
+  const [devices, setDevices] = useState([]);
+  const [unpairedDevices, setUnpairedDevices] = useState([]);
   const [connected, setConnected] = useState(false);
+  const [connecting, setConnecting] = useState(false);
 
   const [modal, setModal] = useState(false);
 
   const requestEnable = () => {
     BluetoothSerial.requestEnable()
-      .then(res => setBluetoothEnable(true))
+      .then(res => setIsEnabled(true))
       .catch(err => {
         ToastAndroid.show(err.message, ToastAndroid.LONG);
       });
@@ -33,9 +35,10 @@ const BluetoothOption = () => {
       return false;
     } else {
       setDiscovering(true);
-      BluetoothSerial.list()
+      BluetoothSerial.discoverUnpairedDevices()
         .then(res => {
-          setDeviceList(res);
+          const uniqueDevices = _.uniqBy(res, 'id');
+          setUnpairedDevices(uniqueDevices);
           setDiscovering(false);
         })
         .catch(err => {
@@ -45,14 +48,14 @@ const BluetoothOption = () => {
   };
 
   const connect = deviceData => {
+    setConnecting(true);
     BluetoothSerial.connect(deviceData.id)
       .then(res => {
         ToastAndroid.show(
           `Connected to device ${deviceData.name}`,
           ToastAndroid.LONG,
         );
-
-        setDevice(deviceData);
+        setConnecting(false);
         setConnected(true);
       })
       .catch(err => ToastAndroid.show(err.message, ToastAndroid.LONG));
@@ -63,33 +66,31 @@ const BluetoothOption = () => {
   };
 
   useEffect(() => {
-    Promise.all([BluetoothSerial.isEnabled(), BluetoothSerial.list()]).then(
-      values => {
-        const [isEnabled, devices] = values;
-        setBluetoothEnable(isEnabled);
-        setDeviceList(devices);
-      },
-    );
+    const enableAndSearch = () => {
+      Promise.all([BluetoothSerial.isEnabled(), BluetoothSerial.list()]).then(
+        values => {
+          const [bIsEnabled, bDevices] = values;
+          setIsEnabled(bIsEnabled);
+          setDevices(bDevices);
+        },
+      );
+    };
 
-    BluetoothSerial.on('bluetoothEnabled', () => setBluetoothEnable(true));
-    BluetoothSerial.on('bluetoothDisabled', () => setBluetoothEnable(false));
+    enableAndSearch();
+
+    BluetoothSerial.on('bluetoothEnabled', enableAndSearch);
+    BluetoothSerial.on('bluetoothDisabled', () => {
+      setIsEnabled(false);
+      setDevices([]);
+    });
     BluetoothSerial.on('error', err => {
       ToastAndroid.show(err.message, ToastAndroid.LONG);
     });
-    BluetoothSerial.on('connectionLost', () => {
-      if (device) {
-        ToastAndroid.show(
-          `Connection to device ${device?.name} has been lost`,
-          ToastAndroid.LONG,
-        );
-      }
-      this.setState({connected: false});
-    });
-  }, [device]);
+  }, []);
 
   useEffect(() => {
-    !bluetoothEnable && requestEnable();
-  }, [bluetoothEnable]);
+    !isEnabled && requestEnable();
+  }, [isEnabled]);
 
   return (
     <>
@@ -126,7 +127,7 @@ const BluetoothOption = () => {
             </TouchableOpacity>
           </View>
           {discovering && <ActivityIndicator size="large" color="#6C1D6E" />}
-          {deviceList?.map((item, index) => {
+          {devices?.map((item, index) => {
             return (
               <TouchableOpacity
                 key={index}
