@@ -1,18 +1,32 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Pressable,
+  StyleSheet,
+} from 'react-native';
 
 const KeyPad = () => {
   return (
     <>
       <View style={styles.keyPad}>
         <View style={styles.optBtnRow}>
-          <TouchableOpacity activeOpacity={0.6} style={styles.optBtn}>
+          <Pressable
+            style={styles.optBtn}
+            onPressIn={() => console.log('on press in')}
+            onPressOut={() => console.log('on press out')}
+            android_ripple={{color: '#6C1D6E'}}>
             <Text style={styles.optBtnText}>💡</Text>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity activeOpacity={0.6} style={styles.optBtn}>
+          <Pressable
+            style={styles.optBtn}
+            onPressIn={() => console.log('on press in')}
+            onPressOut={() => console.log('on press out')}
+            android_ripple={{color: '#6C1D6E'}}>
             <Text style={styles.optBtnText}>🔊</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         <View style={styles.arrow}>
