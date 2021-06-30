@@ -1,53 +1,71 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import {View, Text, Pressable, StyleSheet} from 'react-native';
 
-const KeyPad = () => {
+const KeyPad = ({
+  pressOut,
+  pressForward,
+  pressBackward,
+  pressRight,
+  pressLeft,
+  pressLight,
+  pressHorn,
+}) => {
   return (
     <>
       <View style={styles.keyPad}>
         <View style={styles.optBtnRow}>
           <Pressable
             style={styles.optBtn}
-            onPressIn={() => console.log('on press in')}
-            onPressOut={() => console.log('on press out')}
+            onPressIn={pressLight}
+            onPressOut={pressOut}
             android_ripple={{color: '#6C1D6E'}}>
             <Text style={styles.optBtnText}>💡</Text>
           </Pressable>
 
           <Pressable
             style={styles.optBtn}
-            onPressIn={() => console.log('on press in')}
-            onPressOut={() => console.log('on press out')}
+            onPressIn={pressHorn}
+            onPressOut={pressOut}
             android_ripple={{color: '#6C1D6E'}}>
             <Text style={styles.optBtnText}>🔊</Text>
           </Pressable>
         </View>
 
         <View style={styles.arrow}>
-          <TouchableOpacity activeOpacity={0.6} style={styles.btn}>
+          <Pressable
+            style={styles.btn}
+            onPressIn={pressForward}
+            onPressOut={pressOut}
+            android_ripple={{color: '#fff'}}>
             <Text style={styles.btnText}>△</Text>
-          </TouchableOpacity>
+          </Pressable>
 
           <View style={styles.row}>
-            <TouchableOpacity activeOpacity={0.6} style={styles.btn}>
+            <Pressable
+              style={styles.btn}
+              onPressIn={pressLeft}
+              onPressOut={pressOut}
+              android_ripple={{color: '#fff'}}>
               <Text style={styles.btnText}>◁</Text>
-            </TouchableOpacity>
+            </Pressable>
 
             <View style={styles.btnEmpty} />
-            <TouchableOpacity activeOpacity={0.6} style={styles.btn}>
+            <Pressable
+              style={styles.btn}
+              onPressIn={pressRight}
+              onPressOut={pressOut}
+              android_ripple={{color: '#fff'}}>
               <Text style={styles.btnText}>▷</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
-          <TouchableOpacity activeOpacity={0.6} style={styles.btn}>
+          <Pressable
+            style={styles.btn}
+            onPressIn={pressBackward}
+            onPressOut={pressOut}
+            android_ripple={{color: '#fff'}}>
             <Text style={styles.btnText}>▽</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     </>

@@ -10,15 +10,13 @@ import {
 } from 'react-native';
 
 import BluetoothSerial from 'react-native-bluetooth-serial';
-var _ = require('lodash');
 
 const BluetoothOption = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [discovering, setDiscovering] = useState(false);
   const [devices, setDevices] = useState([]);
-  const [unpairedDevices, setUnpairedDevices] = useState([]);
   const [connected, setConnected] = useState(false);
-  const [connecting, setConnecting] = useState(false);
+  const [device, setDevice] = useState(null);
 
   const [modal, setModal] = useState(false);
 
@@ -37,26 +35,25 @@ const BluetoothOption = () => {
       setDiscovering(true);
       BluetoothSerial.discoverUnpairedDevices()
         .then(res => {
-          const uniqueDevices = _.uniqBy(res, 'id');
-          setUnpairedDevices(uniqueDevices);
+          setDevices(res);
           setDiscovering(false);
         })
         .catch(err => {
           ToastAndroid.show(err.message, ToastAndroid.LONG);
+          setDiscovering(false);
         });
     }
   };
 
   const connect = deviceData => {
-    setConnecting(true);
     BluetoothSerial.connect(deviceData.id)
       .then(res => {
         ToastAndroid.show(
           `Connected to device ${deviceData.name}`,
           ToastAndroid.LONG,
         );
-        setConnecting(false);
         setConnected(true);
+        setDevice(deviceData);
       })
       .catch(err => ToastAndroid.show(err.message, ToastAndroid.LONG));
   };
@@ -101,7 +98,9 @@ const BluetoothOption = () => {
             setModal(true);
           }}
           style={styles.btn}>
-          <Text style={styles.btnText}>device list</Text>
+          <Text style={styles.btnText}>
+            {`device list ${connected && device?.name ? device?.name : ''}`}
+          </Text>
         </TouchableOpacity>
       </View>
 
