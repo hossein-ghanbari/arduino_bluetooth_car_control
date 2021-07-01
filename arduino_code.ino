@@ -7,6 +7,7 @@ int horn = 11;
 int light = 12;
 
 int tempSensorPin = A0; 
+int heartSensorPin = A1; 
 
 double Thermistor(int RawADC) {
   double Temp;
@@ -25,6 +26,9 @@ void setup()
   pinMode(rm2, OUTPUT);
   pinMode(horn, OUTPUT);
   pinMode(light, OUTPUT);
+
+  pinMode(heartSensorPin, INPUT);
+  pinMode(tempSensorPin, INPUT);
 
   //set the serial communication rate
   Serial.begin(9600);
@@ -104,7 +108,11 @@ void loop()
   }
 
   // temperature
-  int readVal=analogRead(sensorPin);
+  int readVal=analogRead(tempSensorPin);
   double temp =  Thermistor(readVal);
   Serial.println('{temp:' + temp + '}');
+
+  // heart beat
+  int beat=analogRead(heartSensorPin); 
+  Serial.println('{heart:' + beat/10 + '}');
 }
