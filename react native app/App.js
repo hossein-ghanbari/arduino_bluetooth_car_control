@@ -13,31 +13,31 @@ const App = () => {
   };
 
   const pressOut = () => {
-    write('CLEAR');
+    write('c');
   };
 
   const pressForward = () => {
-    write('FORWARD');
+    write('f');
   };
 
   const pressBackward = () => {
-    write('BACKWARD');
+    write('b');
   };
 
   const pressRight = () => {
-    write('RIGHT');
+    write('r');
   };
 
   const pressLeft = () => {
-    write('LEFT');
+    write('l');
   };
 
   const pressLight = () => {
-    write('LIGHT');
+    write('n');
   };
 
   const pressHorn = () => {
-    write('HORN');
+    write('h');
   };
 
   return (

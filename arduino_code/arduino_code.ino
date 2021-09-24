@@ -23,8 +23,8 @@ void setup()
   pinMode(horn, OUTPUT);
   pinMode(light, OUTPUT);
 
-  pinMode(heartSensorPin, INPUT);
   pinMode(tempSensorPin, INPUT);
+  pinMode(heartSensorPin, INPUT);
 
   //set the serial communication rate
   Serial.begin(9600);
@@ -33,72 +33,82 @@ void setup()
 void loop()
 {
   //check whether arduino is reciving signal or not
-  while (Serial.available() == 0);
-  char val = Serial.read(); //reads the signal
-  Serial.print(val);
+//  while (Serial.available() == 0);
+  if(Serial.available() == 0){}else{
+    char val = Serial.read(); //reads the signal
+//  Serial.print(val);
 
   //Forward
-  if (val == 'FORWARD')
+  if (val == 'f')
   {
-    Serial.println("{status:'FORWARD'}");
+//    Serial.println("{status:'FORWARD'}");
     digitalWrite(lm, HIGH);
     digitalWrite(rm, HIGH);
   }
 
   //Backward
-  if (val == 'BACKWARD')
+  if (val == 'b')
   {
-    Serial.println("{status:'BACKWARD'}");
+//    Serial.println("{status:'BACKWARD'}");
     digitalWrite(lm, LOW);
     digitalWrite(rm, LOW);
   }
 
   //Right
-  if (val == 'RIGHT')
+  if (val == 'r')
   {
-    Serial.println("{status:'RIGHT'}");
+//    Serial.println("{status:'RIGHT'}");
     digitalWrite(lm, HIGH);
     digitalWrite(rm, LOW);
   }
 
   //Left
-  if (val == 'LEFT')
+  if (val == 'l')
   {
-    Serial.println("{status:'LEFT'}");
+//    Serial.println("{status:'LEFT'}");
     digitalWrite(rm, HIGH);
     digitalWrite(lm, LOW);
   }
 
   //Horn
-  if (val == 'HORN')
+  if (val == 'h')
   {
-    Serial.println("{status:'HORN'}");
+//    Serial.println("{status:'HORN'}");
     digitalWrite(horn, HIGH);
   }
 
   //Light
-  if (val == 'LIGHT')
+  if (val == 'n')
   {
-    Serial.println("{status:'LIGHT'}");
-    digitalWrite(LIGHT, HIGH);
+//    Serial.println("{status:'LIGHT'}");
+    digitalWrite(light, HIGH);
   }
 
   //STOP
-  if (val == 'CLEAR')
+  if (val == 'c')
   {
-    Serial.println("{status:'CLEAR'}");
+//    Serial.println("{status:'CLEAR'}");
     digitalWrite(lm, LOW);
     digitalWrite(rm, LOW);
     digitalWrite(horn, LOW);
     digitalWrite(light, LOW);
   }
 
+    }
+  
   // temperature
   int readVal=analogRead(tempSensorPin);
   double temp =  Thermistor(readVal);
-  Serial.println('{temp:' + temp + '}');
+  String tempLabel = "temp:";
+  String tempExport = tempLabel + temp ;
+  Serial.println(tempExport);
 
   // heart beat
   int beat=analogRead(heartSensorPin); 
-  Serial.println('{heart:' + beat/10 + '}');
+  
+  String heartBeatLabel = "heartBeat:";
+  String heartBeatExport = heartBeatLabel + beat/10 ;
+  Serial.println(heartBeatExport);
+
+//  delay(300);
 }
