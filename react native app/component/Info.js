@@ -4,9 +4,9 @@ import BluetoothSerial from 'react-native-bluetooth-serial';
 
 const Info = () => {
   const [msg, setMsg] = useState({
-    status: '',
     heartBeat: 0,
     temperature: 0,
+    dayStatus: null,
   });
 
   useEffect(() => {
@@ -26,14 +26,22 @@ const Info = () => {
             return {...prevState, heartBeat: value};
           });
         }
+        if (data?.data?.includes('dayStatus:')) {
+          let value = '';
+          value = data?.data?.replace('dayStatus:', '')?.trim();
+          setMsg(prevState => {
+            return {...prevState, dayStatus: value};
+          });
+        }
       });
     });
   }, []);
 
   return (
     <View style={styles.info}>
-      <Text style={styles.infoItem}>Heart Beat : {msg?.heartBeat}</Text>
-      <Text style={styles.infoItem}>Temperature : {msg?.temperature}c</Text>
+      <Text style={styles.infoItem}>♥ : {msg?.heartBeat}</Text>
+      <Text style={styles.infoItem}>🌡 : {msg?.temperature}c</Text>
+      <Text style={styles.infoItem}>🕒 : {msg?.dayStatus}</Text>
     </View>
   );
 };
@@ -45,17 +53,20 @@ const styles = StyleSheet.create({
     borderBottomColor: '#6C1D6E',
     borderBottomWidth: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
   },
   infoItem: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#555',
     borderRadius: 6,
     borderWidth: 3,
     borderColor: '#6C1D6E',
-    // padding: 10,
+    paddingHorizontal: 10,
     height: 50,
+    minWidth: 80,
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
 });
 
