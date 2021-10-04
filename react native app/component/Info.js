@@ -6,7 +6,7 @@ const Info = () => {
   const [msg, setMsg] = useState({
     heartBeat: 0,
     temperature: 0,
-    dayStatus: null,
+    lightSensor: null,
   });
 
   useEffect(() => {
@@ -26,11 +26,11 @@ const Info = () => {
             return {...prevState, heartBeat: value};
           });
         }
-        if (data?.data?.includes('dayStatus:')) {
+        if (data?.data?.includes('lightSensor:')) {
           let value = '';
-          value = data?.data?.replace('dayStatus:', '')?.trim();
+          value = data?.data?.replace('lightSensor:', '')?.trim();
           setMsg(prevState => {
-            return {...prevState, dayStatus: value};
+            return {...prevState, lightSensor: value};
           });
         }
       });
@@ -39,9 +39,15 @@ const Info = () => {
 
   return (
     <View style={styles.info}>
-      <Text style={styles.infoItem}>♥ : {msg?.heartBeat}</Text>
-      <Text style={styles.infoItem}>🌡 : {msg?.temperature}c</Text>
-      <Text style={styles.infoItem}>🕒 : {msg?.dayStatus}</Text>
+      <Text style={styles.infoItem}>
+        ♥ : {msg?.heartBeat > 10 ? msg?.heartBeat : 0}
+      </Text>
+      <Text style={styles.infoItem}>
+        🌡 : {Number(msg?.temperature)?.toFixed()}c
+      </Text>
+      <Text style={styles.infoItem}>
+        🕒 : {msg?.lightSensor > 15 ? 'Day' : 'Night'}
+      </Text>
     </View>
   );
 };
@@ -64,7 +70,7 @@ const styles = StyleSheet.create({
     borderColor: '#6C1D6E',
     paddingHorizontal: 10,
     height: 50,
-    minWidth: 80,
+    minWidth: 100,
     textAlign: 'center',
     textAlignVertical: 'center',
   },
