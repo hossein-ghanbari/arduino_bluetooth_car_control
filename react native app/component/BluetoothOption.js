@@ -84,6 +84,12 @@ const BluetoothOption = () => {
     !isEnabled && requestEnable();
   }, [isEnabled]);
 
+  useEffect(() => {
+    return () => {
+      connected && BluetoothSerial.disconnect();
+    };
+  }, [connected]);
+
   return (
     <>
       <View style={styles.bluetoothOption}>
