@@ -13,49 +13,30 @@ import BluetoothSerial from 'react-native-bluetooth-serial';
 
 const BluetoothOption = () => {
   const [isEnabled, setIsEnabled] = useState(false);
-  const [discovering, setDiscovering] = useState(false);
   const [devices, setDevices] = useState([]);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
   const [device, setDevice] = useState(null);
 
   const [modal, setModal] = useState(false);
 
-  const requestEnable = () => {
-    BluetoothSerial.requestEnable()
-      .then(res => setIsEnabled(true))
-      .catch(err => {
-        ToastAndroid.show(err.message, ToastAndroid.LONG);
-      });
-  };
-
-  const discover = () => {
-    if (discovering) {
-      return false;
-    } else {
-      setDiscovering(true);
-      BluetoothSerial.discoverUnpairedDevices()
-        .then(res => {
-          setDevices(res);
-          setDiscovering(false);
-        })
-        .catch(err => {
-          ToastAndroid.show(err.message, ToastAndroid.LONG);
-          setDiscovering(false);
-        });
-    }
-  };
-
   const connect = deviceData => {
+    setIsConnecting(true);
+
     BluetoothSerial.connect(deviceData.id)
       .then(res => {
         ToastAndroid.show(
           `Connected to device ${deviceData.name}`,
-          ToastAndroid.LONG,
+          ToastAndroid.SHORT,
         );
         setConnected(true);
         setDevice(deviceData);
+        setIsConnecting(false);
       })
-      .catch(err => ToastAndroid.show(err.message, ToastAndroid.LONG));
+      .catch(err => {
+        ToastAndroid.show(err.message, ToastAndroid.SHORT);
+        setIsConnecting(false);
+      });
   };
 
   const onDevicePress = deviceData => {
@@ -63,29 +44,43 @@ const BluetoothOption = () => {
   };
 
   useEffect(() => {
-    const enableAndSearch = () => {
-      Promise.all([BluetoothSerial.isEnabled(), BluetoothSerial.list()]).then(
-        values => {
-          const [bIsEnabled, bDevices] = values;
-          setIsEnabled(bIsEnabled);
-          setDevices(bDevices);
-        },
-      );
+    const getList = () => {
+      BluetoothSerial.list().then(values => {
+        setDevices(values);
+      });
     };
 
-    enableAndSearch();
+    const checkIsEnabled = () => {
+      BluetoothSerial.isEnabled().then(values => {
+        if (values) {
+          getList();
+        }
+      });
+    };
 
-    BluetoothSerial.on('bluetoothEnabled', enableAndSearch);
+    checkIsEnabled();
+
+    BluetoothSerial.on('bluetoothEnabled', getList);
     BluetoothSerial.on('bluetoothDisabled', () => {
       setIsEnabled(false);
+      setConnected(false);
       setDevices([]);
     });
     BluetoothSerial.on('error', err => {
-      ToastAndroid.show(err.message, ToastAndroid.LONG);
+      ToastAndroid.show(err.message, ToastAndroid.SHORT);
     });
   }, []);
 
   useEffect(() => {
+    const requestEnable = () => {
+      BluetoothSerial.requestEnable()
+        .then(res => setIsEnabled(true))
+        .catch(err => {
+          requestEnable();
+          ToastAndroid.show(err?.message, ToastAndroid.SHORT);
+        });
+    };
+
     !isEnabled && requestEnable();
   }, [isEnabled]);
 
@@ -114,18 +109,12 @@ const BluetoothOption = () => {
           <View style={styles.modalHeadBtns}>
             <TouchableOpacity
               activeOpacity={0.6}
-              onPress={discover}
-              style={styles.btn}>
-              <Text style={styles.btnText}>Scan</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={0.6}
               onPress={() => setModal(false)}
-              style={[styles.btn, styles.btn2]}>
+              style={styles.btn}>
               <Text style={styles.btnText}>Back</Text>
             </TouchableOpacity>
           </View>
-          {discovering && <ActivityIndicator size="large" color="#6C1D6E" />}
+          {isConnecting && <ActivityIndicator size="large" color="#6C1D6E" />}
           {devices?.map((item, index) => {
             return (
               <TouchableOpacity
@@ -161,9 +150,6 @@ const styles = StyleSheet.create({
   btnText: {
     color: '#fff',
     fontSize: 14,
-  },
-  btn2: {
-    marginLeft: 15,
   },
   modal: {
     flex: 1,
