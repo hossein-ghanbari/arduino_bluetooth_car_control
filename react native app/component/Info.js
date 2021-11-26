@@ -3,35 +3,18 @@ import {View, Text, StyleSheet} from 'react-native';
 import BluetoothSerial from 'react-native-bluetooth-serial';
 
 const Info = () => {
-  const [msg, setMsg] = useState({
-    heartBeat: 0,
-    temperature: 0,
-    lightSensor: null,
-  });
+  const [msg, setMsg] = useState([0, 0, 0]);
+
+  // recived_data = [temp, heartBeat, lightSensor];
 
   useEffect(() => {
+    let localMsg = [];
     BluetoothSerial.withDelimiter('\r').then(() => {
       BluetoothSerial.on('read', data => {
-        if (data?.data?.includes('temp:')) {
-          let value = '';
-          value = data?.data?.replace('temp:', '')?.trim();
-          setMsg(prevState => {
-            return {...prevState, temperature: value};
-          });
-        }
-        if (data?.data?.includes('heartBeat:')) {
-          let value = '';
-          value = data?.data?.replace('heartBeat:', '')?.trim();
-          setMsg(prevState => {
-            return {...prevState, heartBeat: value};
-          });
-        }
-        if (data?.data?.includes('lightSensor:')) {
-          let value = '';
-          value = data?.data?.replace('lightSensor:', '')?.trim();
-          setMsg(prevState => {
-            return {...prevState, lightSensor: value};
-          });
+        localMsg = data?.data?.split(',');
+
+        if (localMsg?.length > 0) {
+          setMsg(localMsg);
         }
       });
     });
@@ -39,15 +22,9 @@ const Info = () => {
 
   return (
     <View style={styles.info}>
-      <Text style={styles.infoItem}>
-        ♥ : {msg?.heartBeat > 10 ? msg?.heartBeat : 0}
-      </Text>
-      <Text style={styles.infoItem}>
-        🌡 : {Number(msg?.temperature)?.toFixed()}c
-      </Text>
-      <Text style={styles.infoItem}>
-        🕒 : {msg?.lightSensor > 15 ? 'Day' : 'Night'}
-      </Text>
+      <Text style={styles.infoItem}>♥ : {msg[1] > 10 ? msg[1] : 0}</Text>
+      <Text style={styles.infoItem}>🌡 : {Number(msg[0])?.toFixed()}c</Text>
+      <Text style={styles.infoItem}>🕒 : {msg[2] > 12 ? 'Day' : 'Night'}</Text>
     </View>
   );
 };
@@ -63,7 +40,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   infoItem: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#555',
     borderRadius: 6,
     borderWidth: 3,
