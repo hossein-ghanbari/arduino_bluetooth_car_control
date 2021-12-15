@@ -12,7 +12,8 @@
   "dependencies": {
     "react": "17.0.1",
     "react-native": "0.64.2",
-    "react-native-bluetooth-serial": "^1.0.0-rc1"
+    "react-native-bluetooth-serial": "^1.0.0-rc1",
+    "react-native-gl-model-view": "^1.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

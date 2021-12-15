@@ -7,6 +7,8 @@ import KeyPad from './component/KeyPad';
 import Info from './component/Info';
 import BluetoothOption from './component/BluetoothOption';
 
+import ModelView from 'react-native-gl-model-view';
+
 const App = () => {
   const write = message => {
     BluetoothSerial.write(message);
@@ -44,7 +46,7 @@ const App = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={'light-content'} backgroundColor="#6C1D6E" />
 
-      <BluetoothOption />
+      {/* <BluetoothOption />
 
       <Info />
 
@@ -56,6 +58,21 @@ const App = () => {
         pressLeft={pressLeft}
         pressLight={pressLight}
         pressHorn={pressHorn}
+      /> */}
+
+      <ModelView
+        model={{
+          uri: 'amongUs.obj',
+        }}
+        // texture={{
+        //   uri: 'texture.png',
+        // }}
+        scale={0.01}
+        translateZ={-2}
+        rotateX={10}
+        rotateY={10}
+        rotateZ={10}
+        style={{flex: 1}}
       />
     </SafeAreaView>
   );

@@ -30,7 +30,7 @@ const KeyPad = ({
             <Text style={styles.optBtnText}>🔊</Text>
           </Pressable>
         </View>
-        {/* 
+
         <View style={styles.arrow}>
           <Pressable
             style={styles.btn}
@@ -66,7 +66,7 @@ const KeyPad = ({
             android_ripple={{color: '#fff'}}>
             <Text style={styles.btnText}>▽</Text>
           </Pressable>
-        </View> */}
+        </View>
       </View>
     </>
   );
