@@ -12,6 +12,8 @@ target 'arduino_bluetooth_car_control' do
     :hermes_enabled => false
   )
 
+  pod 'RNGLModelView', :path => '../node_modules/react-native-gl-model-view'
+
   target 'arduino_bluetooth_car_controlTests' do
     inherit! :complete
     # Pods for testing
