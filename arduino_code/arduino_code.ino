@@ -1,3 +1,5 @@
+#include <Wire.h>
+
 //Declare the arduino pins
 int rm1 = 5;
 int rm2 = 6;
@@ -9,6 +11,19 @@ int light = 12;
 int tempSensorPin = A0;
 int heartSensorPin = A1;
 int lightSensorPin = A2;
+
+//gy-521
+const int MPU_addr = 0x68;
+int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
+int16_t temperature;
+
+int minVal = 265;
+int maxVal = 402;
+
+double x;
+double y;
+double z;
+//end
 
 double Thermistor(int RawADC) {
   double Temp;
@@ -30,6 +45,14 @@ void setup()
 
   pinMode(tempSensorPin, INPUT);
   pinMode(heartSensorPin, INPUT);
+
+  //gy-521
+  Wire.begin();
+  Wire.beginTransmission(MPU_addr);
+  Wire.write(0x6B);
+  Wire.write(0);
+  Wire.endTransmission(true);
+  //end
 
   //set the serial communication rate
   Serial.begin(9600);
@@ -116,9 +139,32 @@ void loop()
 
   //light sensore
   int lightVal = analogRead(lightSensorPin);
-  String lightSensorExport = String(lightVal) ;
+  String lightSensorExport = String(lightVal);
+
+  //angle
+  Wire.beginTransmission(MPU_addr);
+  Wire.write(0x3B);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU_addr, 14, true);
+  AcX = Wire.read() << 8 | Wire.read();
+  AcY = Wire.read() << 8 | Wire.read();
+  AcZ = Wire.read() << 8 | Wire.read();
+  temperature = Wire.read() << 8 | Wire.read();
+  int xAng = map(AcX, minVal, maxVal, -90, 90);
+  int yAng = map(AcY, minVal, maxVal, -90, 90);
+  int zAng = map(AcZ, minVal, maxVal, -90, 90);
+
+  x = RAD_TO_DEG * (atan2(-yAng, -zAng) + PI);
+  y = RAD_TO_DEG * (atan2(-xAng, -zAng) + PI);
+  z = RAD_TO_DEG * (atan2(-yAng, -xAng) + PI);
+
+  String xExport = String(x);
+  String yExport = String(y);
+  String zExport = String(z);
+  //  String tempExport = String(temperature / 340.00 + 36.53);
+  //end
 
 
-  Serial.println(tempExport + ','  + heartBeatExport + ',' + lightSensorExport);
+  Serial.println(tempExport + ','  + heartBeatExport + ',' + lightSensorExport + ',' +  xExport + ',' + yExport + ',' + zExport);
   delay(100);
 }
