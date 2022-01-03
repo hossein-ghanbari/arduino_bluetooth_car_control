@@ -140,7 +140,7 @@ const BluetoothOption = () => {
 
 const styles = StyleSheet.create({
   bluetoothOption: {
-    paddingVertical: 30,
+    paddingVertical: 10,
     borderBottomColor: '#6C1D6E',
     borderBottomWidth: 1,
     flexDirection: 'row',

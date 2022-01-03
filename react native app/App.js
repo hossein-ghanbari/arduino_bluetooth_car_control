@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {
   SafeAreaView,
   View,
+  ScrollView,
   Animated,
   StatusBar,
   StyleSheet,
@@ -14,12 +15,12 @@ import Info from './component/Info';
 import BluetoothOption from './component/BluetoothOption';
 
 import ModelView from 'react-native-gl-model-view';
-const AnimatedModelView = Animated.createAnimatedComponent(ModelView);
+import CardModel from './component/CarModal';
 
 const App = () => {
-  const [x, setX] = useState(0);
+  const [x, setX] = useState(-75);
   const [y, setY] = useState(0);
-  const [z, setZ] = useState(0);
+  const [z, setZ] = useState(180);
   const write = message => {
     BluetoothSerial.write(message);
   };
@@ -30,10 +31,8 @@ const App = () => {
 
   const pressForward = () => {
     write('f');
+    // setY(prevState => prevState + 5);
 
-    // for (let index = 0; index < 100; index++) {
-    //   setY(prevState => prevState + 1);
-    // }
     setInterval(() => {
       setY(prevState => prevState + 1);
     }, 0);
@@ -45,9 +44,11 @@ const App = () => {
 
   const pressRight = () => {
     write('r');
-    setInterval(() => {
-      setX(prevState => prevState + 1);
-    }, 1);
+    setX(prevState => prevState + 5);
+
+    // setInterval(() => {
+    //   setX(prevState => prevState + 1);
+    // }, 1);
   };
 
   const pressLeft = () => {
@@ -67,10 +68,12 @@ const App = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={'light-content'} backgroundColor="#6C1D6E" />
 
-      <View style={{flex: 1, backgroundColor: 'red'}}>
-        {/* <BluetoothOption />
+      <ScrollView>
+        <CardModel x={x} y={y} z={z} />
 
-      <Info /> */}
+        {/* <BluetoothOption /> */}
+
+        <Info />
 
         <KeyPad
           pressOut={pressOut}
@@ -81,26 +84,7 @@ const App = () => {
           pressLight={pressLight}
           pressHorn={pressHorn}
         />
-      </View>
-
-      <ModelView
-        model={{
-          uri: 'among_us.obj',
-        }}
-        texture={{
-          uri: 'Plastic_4K_Diffuse.jpg',
-        }}
-        // flipTexture={true}
-        scale={0.01}
-        translateX={0}
-        translateY={-1}
-        translateZ={-2}
-        rotateX={x}
-        rotateY={y}
-        rotateZ={z}
-        animate={true}
-        style={{flex: 1}}
-      />
+      </ScrollView>
     </SafeAreaView>
   );
 };
